@@ -31,12 +31,14 @@ ports_description:
 options:
   streams:
     streams: []
-  buffer: 600
+  buffer: 800
   codec: flac
   send_to_muted: false
   sampleformat: "44100:16:2"
   spotify_name: "SURROUND"
+  initial_volume: 75
   log_level: info
+  
 schema:
   # Use nested option to force yaml editor on addon's config page
   streams:

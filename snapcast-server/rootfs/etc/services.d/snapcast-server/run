@@ -1,18 +1,20 @@
 #!/usr/bin/with-contenv bashio
 # ==============================================================================
-# Start the example service
-# s6-overlay docs: https://github.com/just-containers/s6-overlay
+# Start snapcast server with persistent configuration
 # ==============================================================================
 
-config=/etc/snapserver.conf
+# Définir l'emplacement du fichier de configuration persistant
+persistent_config="/share/snapserver/snapserver.conf"
+config_dir="/share/snapserver"
 
+# Attendre que Avahi soit prêt
 until [ -e /run/avahi-daemon/pid ]; do
   sleep 1s
 done
 
-bashio::log.info "Starting snapcast server..."
+bashio::log.info "Starting snapcast server with persistent configuration..."
 
-# Use the log level if set
+# Utiliser le niveau de log si défini
 if bashio::config.has_value "log_level"; then
     bashio::log.info "Setting log level to '$(bashio::config 'log_level')'"
     bashio::log.level "$(bashio::config 'log_level')"
@@ -20,40 +22,52 @@ fi
 
 bashio::log.debug "Config: $(bashio::addon.config)"
 
-echo "[stream]" > "${config}"
-for stream in $(bashio::config 'streams.streams'); do
-    echo "stream = ${stream}" >> "${config}"
-done
+# Créer le répertoire de configuration s'il n'existe pas
+mkdir -p "$config_dir"
 
-# Add the Spotify source
+# Obtenir la valeur de volume initial ou utiliser 80% par défaut
+initial_volume=80
+if bashio::config.has_value 'initial_volume'; then
+    initial_volume=$(bashio::config 'initial_volume')
+    bashio::log.info "Using configured initial volume: ${initial_volume}%"
+else
+    bashio::log.info "Using default initial volume: ${initial_volume}%"
+fi
+
+# Préparer les paramètres Spotify
 device_name=$(bashio::config 'spotify_name')
 spotify_auth=""
 if bashio::config.has_value 'spotify_username'; then
     bashio::config.require 'spotify_password'
-
     username=$(bashio::config 'spotify_username')
     password=$(bashio::config 'spotify_password')
-
     spotify_auth="&username=${username}&password=${password}"
 fi
 
-# Get initial volume or use 80% as default
-volume_param=""
-if bashio::config.has_value 'initial_volume'; then
-    volume_param="&volume=$(bashio::config 'initial_volume')"
-else
-    volume_param="&volume=80"
-fi
-
+# Créer le fichier de configuration Snapserver
 {
-    echo "stream = librespot:///usr/bin/librespot?name=Spotify&devicename=${device_name}${spotify_auth}${volume_param}&normalize=true&disable_audio_cache=true"
+    echo "[stream]"
+    
+    # Ajouter les streams configurés
+    for stream in $(bashio::config 'streams.streams'); do
+        echo "stream = ${stream}"
+    done
+    
+    # Ajouter la source Spotify avec volume initial et normalisation
+    echo "stream = librespot:///usr/bin/librespot?name=Spotify&devicename=${device_name}${spotify_auth}&volume=${initial_volume}&normalize=true&disable_audio_cache=true"
+    
+    # Ajouter les autres paramètres de configuration
     echo "buffer = $(bashio::config 'buffer')"
     echo "codec = $(bashio::config 'codec')"
     echo "send_to_muted = $(bashio::config 'send_to_muted')"
     echo "sampleformat = $(bashio::config 'sampleformat')"
+    
+    # Configuration HTTP
     echo "[http]"
     echo "doc_root = /usr/share/snapserver/snapweb"
-} >> "${config}"
+} > "${persistent_config}"
+
+bashio::log.info "Snapserver configuration saved to ${persistent_config}"
 
 # Configure snapweb
 cat <<EOT > /usr/share/snapserver/snapweb/config.js
@@ -63,5 +77,6 @@ let config = {
 }
 EOT
 
-## Run snapserver program
-/usr/bin/snapserver -c /etc/snapserver.conf
+# Démarrer Snapserver avec le fichier de configuration persistant
+bashio::log.info "Starting snapserver with persistent configuration..."
+/usr/bin/snapserver -c "${persistent_config}"

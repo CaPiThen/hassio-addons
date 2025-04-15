@@ -27,6 +27,7 @@ done
 
 # Add the Spotify source
 device_name=$(bashio::config 'spotify_name')
+initial_volume=$(bashio::config 'initial_volume' '80')  # <-- Récupération de la valeur
 spotify_auth=""
 if bashio::config.has_value 'spotify_username'; then
     bashio::config.require 'spotify_password'
@@ -38,7 +39,7 @@ if bashio::config.has_value 'spotify_username'; then
 fi
 
 {
-    echo "stream = librespot:///usr/bin/librespot?name=Spotify&initial_volume=80&devicename=${device_name}${spotify_auth}&disable_audio_cache=true"
+    echo "stream = librespot:///usr/bin/librespot?name=Spotify&initial_volume=${initial_volume}&devicename=${device_name}${spotify_auth}&disable_audio_cache=true"  # <-- Variable ajoutée
     echo "buffer = $(bashio::config 'buffer')"
     echo "codec = $(bashio::config 'codec')"
     echo "send_to_muted = $(bashio::config 'send_to_muted')"

@@ -51,4 +51,4 @@ schema:
   spotify_password: password?
   initial_volume: "int(0,100)"
   log_level: list(trace|debug|info|notice|warning|error|fatal)
-image: "ghcr.io/capithen/{arch}-snapcast-server"
+image: "ghcr.io/corneyl/{arch}-snapcast-server"

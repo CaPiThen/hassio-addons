@@ -1,8 +1,8 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration#add-on-config
-name: Snapcast server - personalized
+name: Snapcast server
 version: "0.2.1"
 slug: snapcast-server
-description: Snapcast server with Spotify connect support - personalized
+description: Snapcast server with Spotify connect support
 url: "https://github.com/capithen/hassio-addons/tree/main/snapcast-server"
 audio: true
 host_network: true
@@ -31,14 +31,13 @@ ports_description:
 options:
   streams:
     streams: []
-  buffer: 800
+  buffer: 1000
   codec: flac
   send_to_muted: false
   sampleformat: "44100:16:2"
   spotify_name: "SURROUND"
-  initial_volume: 75
+  initial_volume: 80
   log_level: info
-  
 schema:
   # Use nested option to force yaml editor on addon's config page
   streams:
@@ -50,5 +49,6 @@ schema:
   spotify_name: str
   spotify_username: str?
   spotify_password: password?
+  initial_volume: "int(0,100)"
   log_level: list(trace|debug|info|notice|warning|error|fatal)
-image: "ghcr.io/corneyl/{arch}-snapcast-server"
+image: "ghcr.io/capithen/{arch}-snapcast-server"

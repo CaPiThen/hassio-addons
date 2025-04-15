@@ -37,16 +37,7 @@ if bashio::config.has_value 'spotify_username'; then
     spotify_auth="&username=${username}&password=${password}"
 fi
 
-# Get initial volume or use 80% as default
-volume_param=""
-if bashio::config.has_value 'initial_volume'; then
-    volume_param="&volume=$(bashio::config 'initial_volume')"
-else
-    volume_param="&volume=80"
-fi
-
 {
-    echo "stream = librespot:///usr/bin/librespot?name=Spotify&devicename=${device_name}${spotify_auth}&volume=${initial_volume:-80}&normalize=true&disable_audio_cache=true"
     echo "buffer = $(bashio::config 'buffer')"
     echo "codec = $(bashio::config 'codec')"
     echo "send_to_muted = $(bashio::config 'send_to_muted')"

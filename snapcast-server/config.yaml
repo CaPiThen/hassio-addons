@@ -1,9 +1,9 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration#add-on-config
-name: Snapcast server
+name: Snapcast server - personalized
 version: "0.2.1"
 slug: snapcast-server
-description: Snapcast server with Spotify connect support
-url: "https://github.com/corneyl/hassio-addons/tree/main/snapcast-server"
+description: Snapcast server with Spotify connect support - personalized
+url: "https://github.com/capithen/hassio-addons/tree/main/snapcast-server"
 audio: true
 host_network: true
 ingress: true
@@ -31,11 +31,11 @@ ports_description:
 options:
   streams:
     streams: []
-  buffer: 1000
+  buffer: 600
   codec: flac
   send_to_muted: false
-  sampleformat: "48000:16:2"
-  spotify_name: "Home Assistant Sound System"
+  sampleformat: "44100:16:2"
+  spotify_name: "SURROUND"
   log_level: info
 schema:
   # Use nested option to force yaml editor on addon's config page

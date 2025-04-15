@@ -38,7 +38,7 @@ if bashio::config.has_value 'spotify_username'; then
 fi
 
 {
-    echo "stream = librespot:///usr/bin/librespot?name=Spotify&volume=80&devicename=${device_name}${spotify_auth}&disable_audio_cache=true"
+    echo "stream = librespot:///usr/bin/librespot?name=Spotify&initial_volume=80&devicename=${device_name}${spotify_auth}&disable_audio_cache=true"
     echo "buffer = $(bashio::config 'buffer')"
     echo "codec = $(bashio::config 'codec')"
     echo "send_to_muted = $(bashio::config 'send_to_muted')"

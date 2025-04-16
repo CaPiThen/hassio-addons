@@ -25,6 +25,10 @@ for stream in $(bashio::config 'streams.streams'); do
     echo "stream = ${stream}" >> "${config}"
 done
 
+# Initial Volume
+initial_volume=$(bashio::config 'initial_volume')
+options+=(--initial-volume "$initial_volume")
+
 # Add the Spotify source
 device_name=$(bashio::config 'spotify_name')
 spotify_auth=""
